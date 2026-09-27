@@ -13,23 +13,22 @@ import streamlit as st
 
 pipeline = joblib.load('models/best_pipeline.pkl')
 
-FAVICON = """data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23c084fc"><path d="M12 2a9 9 0 0 0-9 9c0 3.87 2.45 7.17 5.92 8.42.45.08.62-.2.62-.44v-1.54c-2.42.53-2.93-1.17-2.93-1.17-.4-.99-.97-1.26-.97-1.26-.79-.54.06-.53.06-.53.87.06 1.33.9 1.33.9.77 1.33 2.03.95 2.53.72.08-.56.3-.95.55-1.17-1.93-.22-3.96-.97-3.96-4.31 0-.95.34-1.73.9-2.34-.09-.22-.39-1.11.09-2.31 0 0 .73-.23 2.4 1.12a8.38 8.38 0 0 1 4.38 0c1.67-1.35 2.4-1.12 2.4-1.12.48 1.2.18 2.09.09 2.31.56.61.9 1.39.9 2.34 0 3.35-2.03 4.09-3.97 4.31.31.27.59.8.59 1.62v2.4c0 .24.16.53.62.44A9.003 9.003 0 0 0 21 11a9 9 0 0 0-9-9z"/></svg>"""
+FAVICON = """data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300f2fe"><path d="M12 2a9 9 0 0 0-9 9c0 3.87 2.45 7.17 5.92 8.42.45.08.62-.2.62-.44v-1.54c-2.42.53-2.93-1.17-2.93-1.17-.4-.99-.97-1.26-.97-1.26-.79-.54.06-.53.06-.53.87.06 1.33.9 1.33.9.77 1.33 2.03.95 2.53.72.08-.56.3-.95.55-1.17-1.93-.22-3.96-.97-3.96-4.31 0-.95.34-1.73.9-2.34-.09-.22-.39-1.11.09-2.31 0 0 .73-.23 2.4 1.12a8.38 8.38 0 0 1 4.38 0c1.67-1.35 2.4-1.12 2.4-1.12.48 1.2.18 2.09.09 2.31.56.61.9 1.39.9 2.34 0 3.35-2.03 4.09-3.97 4.31.31.27.59.8.59 1.62v2.4c0 .24.16.53.62.44A9.003 9.003 0 0 0 21 11a9 9 0 0 0-9-9z"/></svg>"""
 
 st.set_page_config(
-    page_title="PLACEMENT // CORE AI",
+    page_title="NEXUS // CareerPulse AI",
     page_icon=FAVICON,
     layout="wide"
 )
 
-def svg_icon(path_d, color="#c084fc", size=16, viewBox="0 0 24 24"):
+def svg_icon(path_d, color="#38bdf8", size=16, viewBox="0 0 24 24"):
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="{viewBox}" width="{size}" height="{size}" fill="{color}" style="vertical-align: -2px; display: inline-block;"><path d="{path_d}"/></svg>"""
 
-# SVG Icon Paths
+# SVG Vector Paths
 ICO_CHIP = "M6 2v2H4c-.55 0-1 .45-1 1v2H1v2h2v2H1v2h2v2H1v2h2v2c0 .55.45 1 1 1h2v2h2v-2h2v2h2v-2h2v2h2v-2h2c.55 0 1-.45 1-1v-2h2v-2h-2v-2h2v-2h-2v-2h2V7h-2V5c0-.55-.45-1-1-1h-2V2h-2v2h-2V2h-2v2H8V2H6zm2 4h8v8H8V6zm2 2v4h4V8h-4z"
 ICO_SEARCH = "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
 ICO_ID = "M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm-9 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 10H5v-.5c0-1.66 3.33-2.5 5-2.5s5 .84 5 2.5v.5zm3-4h-5v-1h5v1zm0-2h-5v-1h5v1zm0-2h-5V9h5v1z"
 ICO_LAYERS = "M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9.07l-9-7-9 7 1.63 1.2L12 16z"
-ICO_BRANCH = "M6 2a3 3 0 0 0-3 3c0 1.31.84 2.42 2 2.83V16.17c-1.16.41-2 1.52-2 2.83a3 3 0 1 0 5-2.24V14a3 3 0 0 1 3-3h4.17c.41 1.16 1.52 2 2.83 2a3 3 0 1 0-3-3H14a5 5 0 0 0-5 5v.17A3.001 3.001 0 0 0 6 2zm0 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm12 7a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm-12 7a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
 ICO_CHECK = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
 ICO_BAN = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z"
 ICO_BRIEFCASE = "M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"
@@ -45,7 +44,7 @@ def load_student_data():
 
 df_students = load_student_data()
 
-# ----------------- MONOSPACE ROBOTIC + PURPLE THEME -----------------
+# ----------------- MULTI-PALETTE HIGH-TECH STYLING -----------------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap');
@@ -56,40 +55,42 @@ st.markdown("""
 
 h1, h2, h3, h4, h5, h6, .brand-title {
     font-family: 'Share Tech Mono', monospace !important;
-    letter-spacing: 1.2px;
+    letter-spacing: 1.5px;
 }
 
+/* Deep Slate Dark Canvas with Cyan, Purple & Indigo Mesh */
 .stApp {
-    background-color: #06060c !important;
+    background-color: #080c15 !important;
     background-image: 
-        radial-gradient(at 10% 10%, rgba(147, 51, 234, 0.22) 0px, transparent 45%),
-        radial-gradient(at 90% 90%, rgba(192, 132, 252, 0.15) 0px, transparent 45%),
-        radial-gradient(at 50% 50%, rgba(79, 70, 229, 0.08) 0px, transparent 65%) !important;
+        radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.12) 0px, transparent 40%),
+        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 45%),
+        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+        radial-gradient(at 80% 80%, rgba(244, 63, 94, 0.06) 0px, transparent 40%) !important;
     background-attachment: fixed !important;
-    color: #f1f5f9 !important;
+    color: #e2e8f0 !important;
 }
 
-.purple-hero {
-    background: linear-gradient(135deg, rgba(30, 20, 60, 0.8) 0%, rgba(88, 28, 135, 0.45) 50%, rgba(12, 8, 24, 0.85) 100%);
-    border-left: 5px solid #a855f7;
-    border-top: 1px solid rgba(168, 85, 247, 0.35);
-    border-right: 1px solid rgba(168, 85, 247, 0.35);
-    border-bottom: 1px solid rgba(168, 85, 247, 0.35);
-    border-radius: 0 14px 14px 0;
-    padding: 24px 30px;
-    margin-bottom: 24px;
-    box-shadow: 0 10px 35px -5px rgba(139, 92, 246, 0.28);
-    backdrop-filter: blur(16px);
+/* Hero Header with Cyan & Indigo Gradients */
+.nexus-hero {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 27, 75, 0.6) 50%, rgba(15, 23, 42, 0.9) 100%);
+    border-left: 5px solid #00f2fe;
+    border-top: 1px solid rgba(0, 242, 254, 0.25);
+    border-right: 1px solid rgba(139, 92, 246, 0.25);
+    border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+    border-radius: 0 16px 16px 0;
+    padding: 26px 32px;
+    margin-bottom: 22px;
+    box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.6);
 }
 
 .hero-pill {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(168, 85, 247, 0.2);
-    border: 1px solid rgba(192, 132, 252, 0.45);
-    color: #d8b4fe;
-    padding: 4px 14px;
+    background: rgba(0, 242, 254, 0.12);
+    border: 1px solid rgba(0, 242, 254, 0.4);
+    color: #38bdf8;
+    padding: 4px 12px;
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 700;
@@ -98,17 +99,39 @@ h1, h2, h3, h4, h5, h6, .brand-title {
 }
 
 .brand-title {
-    font-size: 2.1rem;
+    font-size: 2.2rem;
     margin: 0;
-    color: #f5f3ff !important;
-    text-shadow: 0 0 16px rgba(192, 132, 252, 0.5);
+    background: linear-gradient(90deg, #ffffff 0%, #38bdf8 50%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
 }
 
-.section-banner {
+.hero-intro {
+    color: #94a3b8;
+    font-size: 0.88rem;
+    margin: 10px 0 0 0;
+    line-height: 1.6;
+}
+
+/* Cyan Section Banners */
+.section-banner-cyan {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(147, 51, 234, 0.12);
+    background: rgba(0, 242, 254, 0.08);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    border-left: 4px solid #00f2fe;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 16px;
+    margin: 16px 0 14px 0;
+}
+
+.section-banner-purple {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(147, 51, 234, 0.1);
     border: 1px solid rgba(168, 85, 247, 0.25);
     border-left: 4px solid #c084fc;
     border-radius: 0 8px 8px 0;
@@ -116,126 +139,154 @@ h1, h2, h3, h4, h5, h6, .brand-title {
     margin: 16px 0 14px 0;
 }
 
+.section-banner-emerald {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-left: 4px solid #10b981;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 16px;
+    margin: 16px 0 14px 0;
+}
+
 .section-title {
-    font-size: 1.02rem;
+    font-size: 1.0rem;
     font-weight: 700;
-    color: #e9d5ff;
+    color: #f1f5f9;
     margin: 0;
     letter-spacing: 0.8px;
 }
 
+/* Glassmorphic Form Card */
 div[data-testid="stForm"] {
-    background: rgba(15, 10, 28, 0.65) !important;
-    border: 1px solid rgba(147, 51, 234, 0.28) !important;
+    background: rgba(13, 19, 33, 0.7) !important;
+    border: 1px solid rgba(56, 189, 248, 0.2) !important;
     border-radius: 14px !important;
     padding: 24px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
-    backdrop-filter: blur(14px) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
 }
 
+/* Cyan to Purple Gradient Submit Action */
 div[data-testid="stFormSubmitButton"] > button {
-    background: linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #c026d3 100%) !important;
-    color: #ffffff !important;
+    background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #8b5cf6 100%) !important;
+    color: #040810 !important;
     font-family: 'Share Tech Mono', monospace !important;
-    font-size: 1.1rem !important;
-    font-weight: 700 !important;
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
     letter-spacing: 2px !important;
     border: none !important;
     border-radius: 6px !important;
     padding: 14px 28px !important;
     width: 100% !important;
-    box-shadow: 0 0 25px rgba(147, 51, 234, 0.45) !important;
+    box-shadow: 0 0 25px rgba(0, 242, 254, 0.4) !important;
     transition: all 0.3s ease !important;
 }
+
 div[data-testid="stFormSubmitButton"] > button:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 0 35px rgba(168, 85, 247, 0.8) !important;
+    box-shadow: 0 0 35px rgba(0, 242, 254, 0.7) !important;
 }
 
+/* Distinct Multi-Color Pillar Badges */
+.pill-badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.badge-lx { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; } /* Emerald */
+.badge-ax { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; } /* Cyan */
+.badge-cx { background: rgba(168, 85, 247, 0.18); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; } /* Purple */
+.badge-px { background: rgba(244, 63, 94, 0.18); border: 1px solid rgba(244, 63, 94, 0.4); color: #fb7185; } /* Crimson */
+.badge-sx { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; } /* Amber */
+
+/* Placed Status Card */
 .card-placed {
-    background: linear-gradient(135deg, rgba(88, 28, 135, 0.4) 0%, rgba(15, 10, 28, 0.85) 100%);
-    border-left: 5px solid #a855f7;
-    border-top: 1px solid rgba(192, 132, 252, 0.4);
-    border-right: 1px solid rgba(192, 132, 252, 0.4);
-    border-bottom: 1px solid rgba(192, 132, 252, 0.4);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(13, 22, 38, 0.9) 100%);
+    border-left: 5px solid #10b981;
+    border-top: 1px solid rgba(16, 185, 129, 0.35);
+    border-right: 1px solid rgba(16, 185, 129, 0.2);
+    border-bottom: 1px solid rgba(16, 185, 129, 0.2);
     border-radius: 0 10px 10px 0;
     padding: 22px;
 }
 
+/* Disqualified / Not Placed Cards */
 .card-unplaced {
-    background: linear-gradient(135deg, rgba(76, 5, 25, 0.4) 0%, rgba(15, 10, 28, 0.85) 100%);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(20, 10, 20, 0.9) 100%);
     border-left: 5px solid #ef4444;
-    border-top: 1px solid rgba(244, 63, 94, 0.35);
-    border-right: 1px solid rgba(244, 63, 94, 0.35);
-    border-bottom: 1px solid rgba(244, 63, 94, 0.35);
+    border-top: 1px solid rgba(239, 68, 68, 0.35);
+    border-right: 1px solid rgba(239, 68, 68, 0.2);
+    border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 0 10px 10px 0;
+    padding: 22px;
+}
+
+.card-warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(20, 16, 10, 0.9) 100%);
+    border-left: 5px solid #f59e0b;
+    border-top: 1px solid rgba(245, 158, 11, 0.35);
+    border-right: 1px solid rgba(245, 158, 11, 0.2);
+    border-bottom: 1px solid rgba(245, 158, 11, 0.2);
     border-radius: 0 10px 10px 0;
     padding: 22px;
 }
 
 .metric-tier-card {
-    background: rgba(20, 14, 38, 0.85);
-    border: 1px solid rgba(147, 51, 234, 0.35);
+    background: rgba(13, 19, 33, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.25);
     border-radius: 10px;
     padding: 22px;
 }
-
-.pill-badge {
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-.badge-lx { background: rgba(168, 85, 247, 0.18); border: 1px solid rgba(168, 85, 247, 0.4); color: #d8b4fe; }
-.badge-ax { background: rgba(129, 140, 248, 0.18); border: 1px solid rgba(129, 140, 248, 0.4); color: #a5b4fc; }
-.badge-cx { background: rgba(192, 132, 252, 0.22); border: 1px solid rgba(192, 132, 252, 0.5); color: #e9d5ff; }
-.badge-px { background: rgba(232, 121, 249, 0.18); border: 1px solid rgba(232, 121, 249, 0.4); color: #f0abfc; }
-.badge-sx { background: rgba(244, 114, 182, 0.18); border: 1px solid rgba(244, 114, 182, 0.4); color: #f472b6; }
 </style>
 """, unsafe_allow_html=True)
 
-# ----------------- HERO HEADER -----------------
+# ----------------- HERO HEADER & INTRO -----------------
 st.markdown(f"""
-<div class="purple-hero">
+<div class="nexus-hero">
     <div class="hero-pill">
-        {svg_icon(ICO_CHIP, '#d8b4fe', 14)}
-        <span>SYS_ID: 1CR23AI119 // PLACEMENT CORE AI</span>
+        {svg_icon(ICO_CHIP, '#00f2fe', 14)}
+        <span>NEXUS // CAREERPULSE AI • v2.6 CALIBRATED</span>
     </div>
-    <h1 class="brand-title">PLACEMENT PREDICTION & READINESS MATRIX</h1>
-    <p style="color: #c4b5fd; font-size: 0.85rem; margin: 6px 0 0 0;">
-        {svg_icon(ICO_BRANCH, '#c084fc', 14)} ENGINE: CALIBRATED RANDOM FOREST // RUBRIC: 5-TIER MODULAR MATRIX
+    <h1 class="brand-title">STUDENT PLACEMENT PREDICTION SYSTEM</h1>
+    <p class="hero-intro">
+        Predictive candidate evaluation engine driven by a calibrated Random Forest pipeline. Integrates corporate hiring criteria: 
+        <b>zero-backlog compliance</b>, <b>60% secondary board thresholds</b>, <b>CGPA elasticity</b>, and <b>5-pillar modular skill diagnostics</b> (Language, Aptitude, Core, Programming, and Soft Skills).
     </p>
 </div>
 """, unsafe_allow_html=True)
 
 # ----------------- CANDIDATE LOOKUP -----------------
 st.markdown(f"""
-<div class="section-banner">
-    {svg_icon(ICO_SEARCH, '#c084fc', 18)}
-    <span class="section-title">Candidate Directory & Auto-Population</span>
+<div class="section-banner-cyan">
+    {svg_icon(ICO_SEARCH, '#00f2fe', 18)}
+    <span class="section-title">Candidate Directory & Profile Auto-Population</span>
 </div>
 """, unsafe_allow_html=True)
 
 has_meta = ('usn' in df_students.columns and 'student_name' in df_students.columns)
 
 if has_meta:
-    options = ['[+] Custom Candidate Entry'] + [
+    options = ['[+] Custom Candidate Manual Entry'] + [
         f"{row.usn} - {row.student_name} ({row.branch} | CGPA: {row.cgpa})"
         for _, row in df_students.head(300).iterrows()
     ]
 else:
-    options = ['[+] Custom Candidate Entry'] + [
+    options = ['[+] Custom Candidate Manual Entry'] + [
         f"ID #{row.student_id:04d} ({row.branch} | CGPA: {row.cgpa})"
         for _, row in df_students.head(300).iterrows()
     ]
 
 selected = st.selectbox("Candidate Search:", options, label_visibility="collapsed")
-is_custom = (selected == '[+] Custom Candidate Entry')
+is_custom = (selected == '[+] Custom Candidate Manual Entry')
 
 if is_custom:
-    d_name, d_usn = "", ""  # Clean ghost placeholder
+    d_name, d_usn = "", ""  # Blank placeholder so no backspacing needed
     d_gender, d_age, d_degree, d_branch = "Male", 21, "BTech", "CS"
     d_tenth, d_twelfth = 82.5, 80.0
     d_cgpa, d_back, d_int, d_cert, d_proj = 8.10, 0, 1, 2, 2
@@ -253,7 +304,6 @@ else:
         
     d_gender, d_age, d_degree, d_branch = row['gender'], int(row['age']), row['degree'], row['branch']
     d_cgpa, d_back = float(row['cgpa']), int(row['backlogs'])
-    # Correlate historical 10th/12th realistically with college CGPA
     d_tenth = round(min(98.0, max(52.0, d_cgpa * 9.5 + 4.0)), 1)
     d_twelfth = round(min(98.0, max(50.0, d_cgpa * 9.2 + 2.0)), 1)
     d_int, d_cert, d_proj = int(row['internships']), int(row['certifications']), int(row['projects'])
@@ -264,19 +314,19 @@ else:
     d_px = float(row['Px_Level_Reached'])
     d_sx = int(row['Sx_Level_Reached'])
 
-# ----------------- INPUT FORM -----------------
+# ----------------- ASSESSMENT INPUT FORM -----------------
 with st.form("student_form"):
     st.markdown(f"""
-    <div class="section-banner">
+    <div class="section-banner-purple">
         {svg_icon(ICO_ID, '#c084fc', 18)}
-        <span class="section-title">Academic & Identity Credentials</span>
+        <span class="section-title">Academic History & Candidate Identity</span>
     </div>
     """, unsafe_allow_html=True)
     
     c1, c2, c3 = st.columns(3)
     with c1:
-        s_name = st.text_input("Full Name", value=d_name, placeholder="Enter student name...")
-        s_usn = st.text_input("University USN", value=d_usn, placeholder="e.g. 1CR23CS0142")
+        s_name = st.text_input("Full Name", value=d_name, placeholder="e.g. Aarav Sharma")
+        s_usn = st.text_input("University USN", value=d_usn, placeholder="e.g. 1CR23CS0042")
         gender = st.selectbox("Gender", ["Male", "Female"], index=0 if d_gender == "Male" else 1)
         age = st.number_input("Age", 18, 30, value=d_age)
         
@@ -296,41 +346,41 @@ with st.form("student_form"):
 
     c4, c5, c6 = st.columns(3)
     with c4:
-        projects = st.number_input("Capstone Projects", 0, 15, value=d_proj)
+        projects = st.number_input("Capstone Projects Built", 0, 15, value=d_proj)
     with c5:
-        coding_skills = st.slider("Coding Fluency (1-10)", 1, 10, value=d_coding)
+        coding_skills = st.slider("Coding Fluency Rating (1-10)", 1, 10, value=d_coding)
     with c6:
         communication_skills = st.slider("Communication Index (1-10)", 1, 10, value=d_comm)
-        aptitude_score = st.slider("Aptitude Benchmark (40-99)", 40, 99, value=d_apt)
+        aptitude_score = st.slider("Aptitude Test Score (40-99)", 40, 99, value=d_apt)
 
     st.markdown(f"""
-    <div class="section-banner">
-        {svg_icon(ICO_LAYERS, '#c084fc', 18)}
-        <span class="section-title">Department Modular Cutoff Clearances</span>
+    <div class="section-banner-emerald">
+        {svg_icon(ICO_LAYERS, '#10b981', 18)}
+        <span class="section-title">Department Modular Cutoff Clearances (5-Pillar Rubric)</span>
     </div>
     """, unsafe_allow_html=True)
     
     m1, m2, m3, m4, m5 = st.columns(5)
     with m1:
         st.markdown('<span class="pill-badge badge-lx">✦ Language (Lx)</span>', unsafe_allow_html=True)
-        lx = st.selectbox("Level Cleared", [0, 1, 2, 3, 4], index=[0, 1, 2, 3, 4].index(int(d_lx)), key="lx_box")
+        lx = st.selectbox("Lx Level", [0, 1, 2, 3, 4], index=[0, 1, 2, 3, 4].index(int(d_lx)), key="lx_box")
     with m2:
         st.markdown('<span class="pill-badge badge-ax">✦ Aptitude (Ax)</span>', unsafe_allow_html=True)
-        ax = st.selectbox("Level Cleared", [0, 1, 2, 3, 4], index=[0, 1, 2, 3, 4].index(int(d_ax)), key="ax_box")
+        ax = st.selectbox("Ax Level", [0, 1, 2, 3, 4], index=[0, 1, 2, 3, 4].index(int(d_ax)), key="ax_box")
     with m3:
         st.markdown('<span class="pill-badge badge-cx">✦ Core Test (Cx)</span>', unsafe_allow_html=True)
-        cx = st.selectbox("Level Cleared", [0, 2, 3, 4, 5], index=[0, 2, 3, 4, 5].index(int(d_cx)) if int(d_cx) in [0, 2, 3, 4, 5] else 2, key="cx_box")
+        cx = st.selectbox("Cx Level", [0, 2, 3, 4, 5], index=[0, 2, 3, 4, 5].index(int(d_cx)) if int(d_cx) in [0, 2, 3, 4, 5] else 2, key="cx_box")
     with m4:
         st.markdown('<span class="pill-badge badge-px">✦ Prog (Px)</span>', unsafe_allow_html=True)
-        px = st.selectbox("Level Cleared", [0.0, 1.0, 2.0, 3.0, 3.5, 4.0, 5.0], index=[0.0, 1.0, 2.0, 3.0, 3.5, 4.0, 5.0].index(float(d_px)), key="px_box")
+        px = st.selectbox("Px Level", [0.0, 1.0, 2.0, 3.0, 3.5, 4.0, 5.0], index=[0.0, 1.0, 2.0, 3.0, 3.5, 4.0, 5.0].index(float(d_px)), key="px_box")
     with m5:
         st.markdown('<span class="pill-badge badge-sx">✦ Softskills (Sx)</span>', unsafe_allow_html=True)
-        sx = st.selectbox("Level Cleared", [0, 1, 2, 3, 4], index=[0, 1, 2, 3, 4].index(int(d_sx)), key="sx_box")
+        sx = st.selectbox("Sx Level", [0, 1, 2, 3, 4], index=[0, 1, 2, 3, 4].index(int(d_sx)), key="sx_box")
 
     st.write("")
-    submitted = st.form_submit_button(">> EXECUTE PLACEMENT ANALYSIS")
+    submitted = st.form_submit_button(">> EXECUTE PREDICTIVE DIAGNOSTICS")
 
-# ----------------- DIAGNOSTIC INFERENCE & REALISTIC ELIGIBILITY -----------------
+# ----------------- DIAGNOSTIC INFERENCE ENGINE -----------------
 if submitted:
     final_name = s_name.strip() if s_name.strip() else ("Candidate" if is_custom else d_name)
     final_usn = s_usn.strip() if s_usn.strip() else ("1CR23CS9999" if is_custom else d_usn)
@@ -359,53 +409,46 @@ if submitted:
     raw_prob = pipeline.predict_proba(student_data)[0][1] * 100
     overall = min(lx, ax, cx, px, sx)
 
-    # 1. HARD CORPORATE FILTER 1: Active Backlogs
+    # 1. Mandatory Filter 1: Active Backlogs
     has_backlogs = (backlogs > 0)
 
-    # 2. HARD CORPORATE FILTER 2: 10th / 12th Board Cutoff (< 60.0% is disqualification for ~90% companies)
+    # 2. Mandatory Filter 2: 10th / 12th Board Cutoff (< 60.0% is disqualification for ~90% companies)
     board_below_60 = (tenth_pct < 60.0) or (twelfth_pct < 60.0)
     cgpa_below_6 = (cgpa < 6.0)
 
-    # Realistic CGPA impact calculation
-    # If CGPA is 7.0-7.5, probability drops significantly compared to an 8.5+ candidate
-    cgpa_modifier = (cgpa - 7.8) * 8.0  # +8% per CGPA point above 7.8, or drops heavily below 7.8
+    # CGPA Scaling Modifier
+    cgpa_modifier = (cgpa - 7.8) * 8.0
 
     if has_backlogs:
         placed_prob = 0.0
         status_placed = False
         rejection_reason = "ACTIVE_BACKLOGS"
     elif board_below_60:
-        # If below 60% in 10th or 12th, chances collapse down to 4-12% regardless of levels
         placed_prob = np.clip(12.0 - (60.0 - min(tenth_pct, twelfth_pct)) * 0.8, 2.0, 14.0)
         status_placed = False
         rejection_reason = "BOARD_MARKS_BELOW_60"
     elif cgpa_below_6:
-        # College CGPA below 6.0 (First class cutoff)
         placed_prob = np.clip(10.0 + (cgpa - 5.0) * 8.0, 3.0, 18.0)
         status_placed = False
         rejection_reason = "CGPA_BELOW_FIRST_CLASS"
     elif pred == 1:
-        # Base probability with CGPA drop curve
         placed_prob = np.clip(raw_prob + cgpa_modifier + (min(tenth_pct, twelfth_pct) - 75.0) * 0.2, 52.0, 98.5)
-        
-        # If CGPA is between 6.0 and 7.2, cap maximum probability to reflect real-world market shrinkage
         if cgpa < 7.0:
-            placed_prob = min(placed_prob, 64.0)  # Heavy drop at 6.x CGPA
+            placed_prob = min(placed_prob, 64.0)
         elif cgpa < 7.5:
-            placed_prob = min(placed_prob, 76.0)  # Moderate drop at 7.0-7.4 CGPA
+            placed_prob = min(placed_prob, 76.0)
             
         status_placed = True
         rejection_reason = None
     else:
-        # Failed assessment tier rubrics
         placed_prob = np.clip(raw_prob * 0.4 + (overall / 3.0) * 10.0 + (cgpa / 10.0) * 8.0, 3.0, 42.0)
         status_placed = False
         rejection_reason = "TIER_CUTOFF_FAILED"
 
     st.markdown(f"""
-    <div class="section-banner">
-        {svg_icon(ICO_REPORT, '#c084fc', 18)}
-        <span class="section-title">Diagnostic Placement Report</span>
+    <div class="section-banner-cyan">
+        {svg_icon(ICO_REPORT, '#00f2fe', 18)}
+        <span class="section-title">Diagnostic Placement & Package Output</span>
     </div>
     """, unsafe_allow_html=True)
     
@@ -414,9 +457,9 @@ if submitted:
     with col_res:
         if rejection_reason == "ACTIVE_BACKLOGS":
             st.markdown(f"""
-            <div class="card-unplaced" style="border-left: 5px solid #ef4444;">
+            <div class="card-unplaced">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 style="color: #f87171; margin: 0; font-weight:800; font-size:1.35rem;">
+                    <h2 style="color: #ef4444; margin: 0; font-weight:800; font-size:1.35rem;">
                         {svg_icon(ICO_BAN, '#ef4444', 22)} DISQUALIFIED: ACTIVE BACKLOGS
                     </h2>
                     <span style="background: rgba(239, 68, 68, 0.25); border: 1px solid rgba(248, 113, 113, 0.5); color: #fca5a5; padding: 4px 14px; border-radius: 4px; font-weight:700; font-size:0.85rem;">
@@ -424,10 +467,10 @@ if submitted:
                     </span>
                 </div>
                 <p style="color: #fca5a5; margin: 10px 0 12px 0; font-weight:600;">
-                    {final_name} [{final_usn}] // ACTIVE BACKLOGS: {backlogs}
+                    {final_name} [{final_usn}] // ACTIVE BACKLOG COUNT: {backlogs}
                 </p>
-                <div style="background: rgba(10, 5, 20, 0.85); padding: 14px 18px; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.35);">
-                    <div style="font-size:0.8rem; text-transform:uppercase; color:#fda4af;">Mandatory Placement Drive Policy</div>
+                <div style="background: rgba(10, 14, 26, 0.85); padding: 14px 18px; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.35);">
+                    <div style="font-size:0.8rem; text-transform:uppercase; color:#fda4af;">Mandatory Corporate Policy Filter</div>
                     <div style="font-size: 0.9rem; color: #fecdd3; margin-top: 4px; line-height: 1.6;">
                         Even if assessment tiers are cleared (Level {overall}), campus recruitment portals automatically filter out candidates with active backlogs. Clear backlog to unlock drive registration.
                     </div>
@@ -438,10 +481,10 @@ if submitted:
         elif rejection_reason == "BOARD_MARKS_BELOW_60":
             failed_board = "10th Grade" if tenth_pct < 60.0 else "12th Grade"
             st.markdown(f"""
-            <div class="card-unplaced" style="border-left: 5px solid #f59e0b;">
+            <div class="card-warning">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 style="color: #fbbf24; margin: 0; font-weight:800; font-size:1.35rem;">
-                        {svg_icon(ICO_ALERT, '#fbbf24', 22)} SEVERE RISK: BOARD MARKS &lt; 60%
+                    <h2 style="color: #f59e0b; margin: 0; font-weight:800; font-size:1.35rem;">
+                        {svg_icon(ICO_ALERT, '#f59e0b', 22)} SEVERE RISK: BOARD MARKS &lt; 60%
                     </h2>
                     <span style="background: rgba(245, 158, 11, 0.25); border: 1px solid rgba(251, 191, 36, 0.5); color: #fde68a; padding: 4px 14px; border-radius: 4px; font-weight:700; font-size:0.85rem;">
                         {placed_prob:.1f}% CRITICAL RISK
@@ -450,7 +493,7 @@ if submitted:
                 <p style="color: #fde68a; margin: 10px 0 12px 0; font-weight:600;">
                     {final_name} [{final_usn}] // 10th: {tenth_pct}% | 12th: {twelfth_pct}%
                 </p>
-                <div style="background: rgba(10, 5, 20, 0.85); padding: 14px 18px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.35);">
+                <div style="background: rgba(10, 14, 26, 0.85); padding: 14px 18px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.35);">
                     <div style="font-size:0.8rem; text-transform:uppercase; color:#fbbf24;">Corporate 60% First Class Barrier</div>
                     <div style="font-size: 0.9rem; color: #fef3c7; margin-top: 4px; line-height: 1.6;">
                         Over 90% of campus hiring companies enforce a <b>strict 60% aggregate cutoff in 10th and 12th</b>. Because your score in {failed_board} is below 60%, corporate ATS filters will reject the candidate before the assessment round.
@@ -460,7 +503,6 @@ if submitted:
             """, unsafe_allow_html=True)
 
         elif status_placed:
-            # Package allocation with realistic CGPA scaling
             if overall == 3.0:
                 pkg, tier_title = "4.0 - 5.0 LPA", "Mass Recruiter / IT Services"
             elif overall == 3.5:
@@ -472,7 +514,6 @@ if submitted:
                 pkg = "12.0 - 16.0 LPA" if cgpa < 8.0 else "14.0 - 20.0 LPA"
                 tier_title = "Tier-1 Tech MNC / AI Labs"
 
-            # Dynamic insight note on CGPA impact
             if cgpa >= 8.5:
                 cgpa_note = "High CGPA (> 8.5) unlocks 100% of visiting campus companies."
             elif cgpa >= 7.5:
@@ -485,23 +526,23 @@ if submitted:
             st.markdown(f"""
             <div class="card-placed">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 style="color: #c084fc; margin: 0; font-weight:800; font-size:1.35rem;">
-                        {svg_icon(ICO_CHECK, '#10b981', 22)} STATUS: PLACED
+                    <h2 style="color: #10b981; margin: 0; font-weight:800; font-size:1.35rem;">
+                        {svg_icon(ICO_CHECK, '#10b981', 22)} STATUS: LIKELY PLACED
                     </h2>
-                    <span style="background: rgba(168, 85, 247, 0.25); border: 1px solid rgba(192, 132, 252, 0.5); color: #e9d5ff; padding: 4px 14px; border-radius: 4px; font-weight:700; font-size:0.85rem;">
+                    <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.5); color: #6ee7b7; padding: 4px 14px; border-radius: 4px; font-weight:700; font-size:0.85rem;">
                         {placed_prob:.1f}% PROBABILITY
                     </span>
                 </div>
                 <p style="color: #e2e8f0; margin: 10px 0 16px 0;">
                     Candidate <b>{final_name}</b> [{final_usn}] satisfies all test tiers, 0-backlog policy, and 60%+ board cutoffs.
                 </p>
-                <div style="background: rgba(10, 5, 20, 0.8); padding: 14px 18px; border-radius: 6px; border: 1px solid rgba(168, 85, 247, 0.3);">
-                    <div style="font-size:0.8rem; text-transform:uppercase; color:#c4b5fd;">
-                        {svg_icon(ICO_BRIEFCASE, '#c4b5fd', 15)} Eligible Compensation Band
+                <div style="background: rgba(10, 14, 26, 0.8); padding: 14px 18px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.25);">
+                    <div style="font-size:0.8rem; text-transform:uppercase; color:#38bdf8;">
+                        {svg_icon(ICO_BRIEFCASE, '#38bdf8', 15)} Projected Compensation Band
                     </div>
-                    <div style="font-size: 1.6rem; font-weight: 800; color: #e9d5ff; margin: 2px 0;">{pkg}</div>
-                    <div style="font-size: 0.85rem; color: #a5b4fc;">Target Tier: <b>{tier_title}</b></div>
-                    <div style="margin-top: 8px; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
+                    <div style="font-size: 1.6rem; font-weight: 800; color: #f8fafc; margin: 2px 0;">{pkg}</div>
+                    <div style="font-size: 0.85rem; color: #94a3b8;">Target Tier: <b style="color:#e2e8f0;">{tier_title}</b></div>
+                    <div style="margin-top: 8px; font-size: 0.8rem; color: #64748b; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
                         <i>💡 {cgpa_note}</i>
                     </div>
                 </div>
@@ -511,10 +552,10 @@ if submitted:
             st.markdown(f"""
             <div class="card-unplaced">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 style="color: #fb7185; margin: 0; font-weight:800; font-size:1.35rem;">
-                        {svg_icon(ICO_BAN, '#fb7185', 22)} STATUS: NOT PLACED
+                    <h2 style="color: #ef4444; margin: 0; font-weight:800; font-size:1.35rem;">
+                        {svg_icon(ICO_BAN, '#ef4444', 22)} STATUS: NOT PLACED
                     </h2>
-                    <span style="background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.4); color: #fda4af; padding: 4px 14px; border-radius: 4px; font-weight:700; font-size:0.85rem;">
+                    <span style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 4px 14px; border-radius: 4px; font-weight:700; font-size:0.85rem;">
                         {100 - placed_prob:.1f}% RISK
                     </span>
                 </div>
@@ -527,16 +568,16 @@ if submitted:
     with col_metrics:
         st.markdown(f"""
         <div class="metric-tier-card">
-            <div style="font-size:0.8rem; text-transform:uppercase; color:#c4b5fd; font-weight:600;">
-                {svg_icon(ICO_LAYERS, '#c4b5fd', 15)} Assessment Tier Vector
+            <div style="font-size:0.8rem; text-transform:uppercase; color:#38bdf8; font-weight:600;">
+                {svg_icon(ICO_LAYERS, '#38bdf8', 15)} Assessment Tier Vector
             </div>
-            <h1 style="color: #f5f3ff; margin: 4px 0 12px 0; font-size: 2.3rem;">LEVEL {overall}</h1>
+            <h1 style="color: #f8fafc; margin: 4px 0 12px 0; font-size: 2.3rem;">LEVEL {overall}</h1>
             <div style="display:flex; flex-direction:column; gap:8px;">
-                <div style="display:flex; justify-content:space-between;"><span style="color:#d8b4fe;">✦ Language:</span> <b>L{lx} / 4</b></div>
-                <div style="display:flex; justify-content:space-between;"><span style="color:#a5b4fc;">✦ Aptitude:</span> <b>L{ax} / 4</b></div>
-                <div style="display:flex; justify-content:space-between;"><span style="color:#e9d5ff;">✦ Core Test:</span> <b>L{cx} / 5</b></div>
-                <div style="display:flex; justify-content:space-between;"><span style="color:#f0abfc;">✦ Programming:</span> <b>L{px} / 5</b></div>
-                <div style="display:flex; justify-content:space-between;"><span style="color:#f472b6;">✦ Soft Skills:</span> <b>L{sx} / 4</b></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:#34d399;">✦ Language (Lx):</span> <b>L{lx} / 4</b></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:#38bdf8;">✦ Aptitude (Ax):</span> <b>L{ax} / 4</b></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:#c084fc;">✦ Core Test (Cx):</span> <b>L{cx} / 5</b></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:#fb7185;">✦ Programming (Px):</span> <b>L{px} / 5</b></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:#fbbf24;">✦ Soft Skills (Sx):</span> <b>L{sx} / 4</b></div>
             </div>
             <div style="margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08); font-size:0.8rem; color:#94a3b8;">
                 <div>10th Board: <b>{tenth_pct}%</b></div>
