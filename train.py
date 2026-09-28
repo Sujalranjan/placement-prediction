@@ -118,8 +118,12 @@ for name, model in models.items():
 results_df = pd.DataFrame(results)
 print(results_df.to_string(index=False))
 
+# Save benchmark results to JSON so app.py dynamically displays actual dataset metrics
+results_df.to_json('models/benchmark_results.json', orient='records', indent=2)
+
 # 7. Export the best-performing pipeline
 joblib.dump(best_pipeline, 'models/best_pipeline.pkl')
 print(
     '\nExported calibrated pipeline (Random Forest) to models/best_pipeline.pkl'
 )
+print('Exported benchmark results to models/benchmark_results.json')

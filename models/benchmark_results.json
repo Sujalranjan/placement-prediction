@@ -1,0 +1,30 @@
+[
+  {
+    "Model":"Logistic Regression",
+    "Accuracy":0.7488,
+    "Precision":0.76,
+    "Recall":0.8131,
+    "F1-Score":0.7856
+  },
+  {
+    "Model":"Random Forest (Calibrated)",
+    "Accuracy":0.7633,
+    "Precision":0.7748,
+    "Recall":0.8205,
+    "F1-Score":0.797
+  },
+  {
+    "Model":"Gradient Boosting",
+    "Accuracy":0.7617,
+    "Precision":0.7738,
+    "Recall":0.8182,
+    "F1-Score":0.7954
+  },
+  {
+    "Model":"KNN",
+    "Accuracy":0.7142,
+    "Precision":0.7263,
+    "Recall":0.7947,
+    "F1-Score":0.759
+  }
+]

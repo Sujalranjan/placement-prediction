@@ -184,7 +184,7 @@ Open your browser at `http://localhost:8501`.
 ## 👩‍💻 Author & Contact
 
 * **Developers**:  Sujal Ranjan & Stuti Katiyar
-* **Repository**: [https://github.com/stutikatiyar/placement-prediction](https://github.com/stutikatiyar/placement-prediction?utm_source=gemini)
+* **Repository**: [https://github.com/stutikatiyar/placement-prediction](https://github.com/stutikatiyar/placement-prediction?utm_source=gemini) / [https://github.com/Sujalranjan/placement-prediction](https://github.com/Sujalranjan/placement-prediction)
 
 ```
 
