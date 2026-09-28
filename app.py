@@ -11,9 +11,10 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 
+# Load trained pipeline
 pipeline = joblib.load('models/best_pipeline.pkl')
 
-FAVICON = """data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300f2fe"><path d="M12 2a9 9 0 0 0-9 9c0 3.87 2.45 7.17 5.92 8.42.45.08.62-.2.62-.44v-1.54c-2.42.53-2.93-1.17-2.93-1.17-.4-.99-.97-1.26-.97-1.26-.79-.54.06-.53.06-.53.87.06 1.33.9 1.33.9.77 1.33 2.03.95 2.53.72.08-.56.3-.95.55-1.17-1.93-.22-3.96-.97-3.96-4.31 0-.95.34-1.73.9-2.34-.09-.22-.39-1.11.09-2.31 0 0 .73-.23 2.4 1.12a8.38 8.38 0 0 1 4.38 0c1.67-1.35 2.4-1.12 2.4-1.12.48 1.2.18 2.09.09 2.31.56.61.9 1.39.9 2.34 0 3.35-2.03 4.09-3.97 4.31.31.27.59.8.59 1.62v2.4c0 .24.16.53.62.44A9.003 9.003 0 0 0 21 11a9 9 0 0 0-9-9z"/></svg>"""
+FAVICON = """data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2306b6d4"><path d="M12 2a9 9 0 0 0-9 9c0 3.87 2.45 7.17 5.92 8.42.45.08.62-.2.62-.44v-1.54c-2.42.53-2.93-1.17-2.93-1.17-.4-.99-.97-1.26-.97-1.26-.79-.54.06-.53.06-.53.87.06 1.33.9 1.33.9.77 1.33 2.03.95 2.53.72.08-.56.3-.95.55-1.17-1.93-.22-3.96-.97-3.96-4.31 0-.95.34-1.73.9-2.34-.09-.22-.39-1.11.09-2.31 0 0 .73-.23 2.4 1.12a8.38 8.38 0 0 1 4.38 0c1.67-1.35 2.4-1.12 2.4-1.12.48 1.2.18 2.09.09 2.31.56.61.9 1.39.9 2.34 0 3.35-2.03 4.09-3.97 4.31.31.27.59.8.59 1.62v2.4c0 .24.16.53.62.44A9.003 9.003 0 0 0 21 11a9 9 0 0 0-9-9z"/></svg>"""
 
 st.set_page_config(
     page_title="NEXUS // CareerPulse AI",
@@ -21,17 +22,18 @@ st.set_page_config(
     layout="wide"
 )
 
-# Navigation State
+# Navigation State Management
 if "current_page" not in st.session_state:
     st.session_state.current_page = "overview"
 
-def navigate_to(page):
-    st.session_state.current_page = page
+def navigate_to(page_name):
+    st.session_state.current_page = page_name
 
-# SVG Vector Helper
+# Inline SVG Vector Helper (zero external font dependencies)
 def svg_icon(path_d, color="#38bdf8", size=16, viewBox="0 0 24 24"):
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="{viewBox}" width="{size}" height="{size}" fill="{color}" style="vertical-align: -2px; display: inline-block;"><path d="{path_d}"/></svg>"""
 
+# Vector Path Constants
 ICO_CHIP = "M6 2v2H4c-.55 0-1 .45-1 1v2H1v2h2v2H1v2h2v2H1v2h2v2c0 .55.45 1 1 1h2v2h2v-2h2v2h2v-2h2v2h2v-2h2c.55 0 1-.45 1-1v-2h2v-2h-2v-2h2v-2h-2v-2h2V7h-2V5c0-.55-.45-1-1-1h-2V2h-2v2h-2V2h-2v2H8V2H6zm2 4h8v8H8V6zm2 2v4h4V8h-4z"
 ICO_SEARCH = "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
 ICO_ID = "M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm-9 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 10H5v-.5c0-1.66 3.33-2.5 5-2.5s5 .84 5 2.5v.5zm3-4h-5v-1h5v1zm0-2h-5v-1h5v1zm0-2h-5V9h5v1z"
@@ -41,55 +43,53 @@ ICO_BAN = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 
 ICO_BRIEFCASE = "M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"
 ICO_REPORT = "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"
 ICO_ALERT = "M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"
-ICO_ROCKET = "M12 2.5s-4 4.5-4 9.5c0 2.2 1.8 4 4 4s4-1.8 4-4c0-5-4-9.5-4-9.5zm-6 12s-2 2-2 4h4s0-2-2-4zm12 0s-2 2-2 4h4s0-2-2-4z"
 ICO_GITHUB = "M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"
+ICO_SHIELD = "M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"
 
 @st.cache_data
 def load_student_data():
-    for path in ['data/student_placement_data.csv', 'data/student_placement_data_v2.csv', 'student_placement_data.csv']:
+    for path in ['data/student_placement_data_v2.csv', 'data/student_placement_data.csv', 'student_placement_data.csv']:
         if os.path.exists(path):
             return pd.read_csv(path)
     raise FileNotFoundError("Could not locate student placement dataset.")
 
 df_students = load_student_data()
 
-# ----------------- CSS ANIMATIONS & MULTI-HUE STYLING -----------------
+# ----------------- MODERN EXECUTIVE SAAS STYLING -----------------
 st.markdown(f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
 
-*, html, body, [class*="css"], [class*="st-"], .stMarkdown, .stText, p, span, label, input, button, select, div {{
+*, html, body, [class*="css"], [class*="st-"], .stMarkdown, p, span, label, input, button, select, div {{
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}}
+
+code, pre, .mono {{
     font-family: 'JetBrains Mono', monospace !important;
 }}
 
-h1, h2, h3, h4, h5, h6, .brand-title {{
-    font-family: 'Share Tech Mono', monospace !important;
-    letter-spacing: 1.5px;
-}}
-
 .stApp {{
-    background-color: #080c15 !important;
+    background-color: #080c16 !important;
     background-image: 
-        radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.12) 0px, transparent 40%),
-        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 45%),
-        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-        radial-gradient(at 80% 80%, rgba(244, 63, 94, 0.06) 0px, transparent 40%) !important;
+        radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 45%),
+        radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.09) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%) !important;
     background-attachment: fixed !important;
-    color: #e2e8f0 !important;
+    color: #f1f5f9 !important;
 }}
 
-/* Navbar Container */
-.navbar-container {{
+/* Top Navigation Bar */
+.navbar-wrapper {{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(13, 19, 33, 0.85);
-    border: 1px solid rgba(56, 189, 248, 0.25);
+    background: rgba(13, 20, 36, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
-    padding: 14px 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(14px);
+    padding: 12px 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(16px);
 }}
 
 .nav-brand {{
@@ -99,53 +99,132 @@ h1, h2, h3, h4, h5, h6, .brand-title {{
 }}
 
 .nav-title {{
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 800;
-    color: #f8fafc;
-    letter-spacing: 1.5px;
+    color: #ffffff;
+    letter-spacing: -0.3px;
 }}
 
-.nav-badge {{
-    background: rgba(0, 242, 254, 0.15);
-    border: 1px solid rgba(0, 242, 254, 0.35);
-    color: #38bdf8;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.72rem;
+.nav-pill {{
+    background: rgba(6, 182, 212, 0.12);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    color: #22d3ee;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
     font-weight: 700;
+    letter-spacing: 0.5px;
 }}
 
-/* Animated Hero Elements */
-@keyframes pulseGlow {{
-    0%, 100% {{ transform: translateY(0px); filter: drop-shadow(0 0 20px rgba(0,242,254,0.3)); }}
-    50% {{ transform: translateY(-6px); filter: drop-shadow(0 0 35px rgba(139,92,246,0.6)); }}
+/* Clean Pill Badge for GitHub Repo */
+.github-badge {{
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: rgba(15, 23, 42, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 9999px !important;
+    padding: 6px 14px !important;
+    color: #cbd5e1 !important;
+    text-decoration: none !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.2px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 }}
 
-.hero-animated-card {{
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(26, 21, 56, 0.7) 50%, rgba(13, 20, 36, 0.95) 100%);
-    border: 1px solid rgba(0, 242, 254, 0.25);
+.github-badge, .github-badge * {{
+    text-decoration: none !important;
+}}
+
+.github-badge:hover {{
+    color: #38bdf8 !important;
+    border-color: rgba(56, 189, 248, 0.45) !important;
+    background: rgba(56, 189, 248, 0.1) !important;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.2) !important;
+    transform: translateY(-1px) !important;
+}}
+
+.github-badge svg {{
+    transition: transform 0.2s ease !important;
+    fill: #94a3b8 !important;
+}}
+
+.github-badge:hover svg {{
+    fill: #38bdf8 !important;
+    transform: scale(1.08) !important;
+}}
+
+/* Clean Custom Input Elements */
+[data-testid="InputInstructions"] {{
+    display: none !important;
+}}
+
+div[data-baseweb="input"], 
+div[data-baseweb="select"] > div {{
+    background: #0d1527 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    transition: all 0.2s ease !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}}
+
+div[data-baseweb="input"]:focus-within,
+div[data-baseweb="select"] > div:focus-within {{
+    border-color: #06b6d4 !important;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2) !important;
+}}
+
+input[type="text"], input[type="number"] {{
+    color: #38bdf8 !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+}}
+
+button[data-testid="stNumberInputStepDown"],
+button[data-testid="stNumberInputStepUp"] {{
+    background: rgba(15, 23, 42, 0.6) !important;
+    color: #94a3b8 !important;
+    border: none !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+}}
+
+button[data-testid="stNumberInputStepDown"]:hover,
+button[data-testid="stNumberInputStepUp"]:hover {{
+    background: rgba(6, 182, 212, 0.15) !important;
+    color: #06b6d4 !important;
+}}
+
+div[data-testid="stWidgetLabel"] label, 
+div[data-testid="stWidgetLabel"] p {{
+    color: #cbd5e1 !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    margin-bottom: 6px !important;
+}}
+
+/* Hero Card */
+.hero-card {{
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(20, 27, 50, 0.7) 50%, rgba(13, 20, 36, 0.9) 100%);
+    border: 1px solid rgba(6, 182, 212, 0.25);
     border-radius: 16px;
-    padding: 40px;
-    margin: 16px 0 28px 0;
+    padding: 38px;
+    margin: 8px 0 24px 0;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-    animation: pulseGlow 6s ease-in-out infinite;
 }}
 
-.hero-glow-title {{
-    font-size: 2.8rem;
+.hero-title {{
+    font-size: 2.5rem;
     font-weight: 800;
-    margin: 10px 0;
-    background: linear-gradient(90deg, #ffffff 0%, #00f2fe 35%, #c084fc 70%, #ffffff 100%);
-    background-size: 200% auto;
+    margin: 12px 0 8px 0;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #ffffff 0%, #38bdf8 45%, #a855f7 90%, #ffffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: textShine 4s linear infinite;
-}}
-
-@keyframes textShine {{
-    to {{ background-position: 200% center; }}
 }}
 
 .stat-grid {{
@@ -156,22 +235,22 @@ h1, h2, h3, h4, h5, h6, .brand-title {{
 }}
 
 .stat-card {{
-    background: rgba(13, 19, 33, 0.85);
+    background: rgba(13, 20, 36, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 10px;
-    padding: 18px;
+    padding: 20px;
     text-align: center;
     transition: all 0.3s ease;
 }}
 
 .stat-card:hover {{
-    transform: translateY(-4px);
-    border-color: rgba(0, 242, 254, 0.4);
-    box-shadow: 0 8px 24px rgba(0, 242, 254, 0.15);
+    transform: translateY(-2px);
+    border-color: rgba(6, 182, 212, 0.4);
+    box-shadow: 0 8px 24px rgba(6, 182, 212, 0.12);
 }}
 
 .feature-box {{
-    background: rgba(15, 23, 42, 0.7);
+    background: rgba(13, 20, 36, 0.65);
     border: 1px solid rgba(255, 255, 255, 0.07);
     border-left: 4px solid #38bdf8;
     border-radius: 0 10px 10px 0;
@@ -179,14 +258,93 @@ h1, h2, h3, h4, h5, h6, .brand-title {{
     height: 100%;
 }}
 
-/* Section Banners */
+div[data-testid="stForm"] {{
+    background: rgba(13, 20, 36, 0.65) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px !important;
+    padding: 26px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
+}}
+
+div[data-testid="stFormSubmitButton"] > button {{
+    background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%) !important;
+    color: #ffffff !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 24px !important;
+    width: 100% !important;
+    box-shadow: 0 4px 18px rgba(6, 182, 212, 0.35) !important;
+    transition: all 0.25s ease !important;
+}}
+
+div[data-testid="stFormSubmitButton"] > button:hover {{
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 24px rgba(6, 182, 212, 0.55) !important;
+}}
+
+/* Pillar Badges */
+.pill-badge {{
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}}
+.badge-lx {{ background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; }}
+.badge-ax {{ background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; }}
+.badge-cx {{ background: rgba(168, 85, 247, 0.18); border: 1px solid rgba(168, 85, 247, 0.35); color: #c084fc; }}
+.badge-px {{ background: rgba(244, 63, 94, 0.18); border: 1px solid rgba(244, 63, 94, 0.35); color: #fb7185; }}
+.badge-sx {{ background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; }}
+
+.card-placed {{
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(13, 22, 38, 0.9) 100%);
+    border-left: 5px solid #10b981;
+    border-top: 1px solid rgba(16, 185, 129, 0.3);
+    border-right: 1px solid rgba(16, 185, 129, 0.15);
+    border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+    border-radius: 0 10px 10px 0;
+    padding: 22px;
+}}
+
+.card-unplaced {{
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(20, 10, 20, 0.9) 100%);
+    border-left: 5px solid #ef4444;
+    border-top: 1px solid rgba(239, 68, 68, 0.3);
+    border-right: 1px solid rgba(239, 68, 68, 0.15);
+    border-bottom: 1px solid rgba(239, 68, 68, 0.15);
+    border-radius: 0 10px 10px 0;
+    padding: 22px;
+}}
+
+.card-warning {{
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(20, 16, 10, 0.9) 100%);
+    border-left: 5px solid #f59e0b;
+    border-top: 1px solid rgba(245, 158, 11, 0.3);
+    border-right: 1px solid rgba(245, 158, 11, 0.15);
+    border-bottom: 1px solid rgba(245, 158, 11, 0.15);
+    border-radius: 0 10px 10px 0;
+    padding: 22px;
+}}
+
+.metric-tier-card {{
+    background: rgba(13, 20, 36, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 22px;
+}}
+
 .section-banner-cyan {{
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(0, 242, 254, 0.08);
-    border: 1px solid rgba(0, 242, 254, 0.2);
-    border-left: 4px solid #00f2fe;
+    background: rgba(6, 182, 212, 0.08);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    border-left: 4px solid #06b6d4;
     border-radius: 0 8px 8px 0;
     padding: 10px 16px;
     margin: 16px 0 14px 0;
@@ -215,133 +373,52 @@ h1, h2, h3, h4, h5, h6, .brand-title {{
     padding: 10px 16px;
     margin: 16px 0 14px 0;
 }}
-
-.section-title {{
-    font-size: 1.0rem;
-    font-weight: 700;
-    color: #f1f5f9;
-    margin: 0;
-    letter-spacing: 0.8px;
-}}
-
-/* Form Submit Button */
-div[data-testid="stFormSubmitButton"] > button {{
-    background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #8b5cf6 100%) !important;
-    color: #040810 !important;
-    font-family: 'Share Tech Mono', monospace !important;
-    font-size: 1.15rem !important;
-    font-weight: 800 !important;
-    letter-spacing: 2px !important;
-    border: none !important;
-    border-radius: 6px !important;
-    padding: 14px 28px !important;
-    width: 100% !important;
-    box-shadow: 0 0 25px rgba(0, 242, 254, 0.4) !important;
-    transition: all 0.3s ease !important;
-}}
-
-div[data-testid="stFormSubmitButton"] > button:hover {{
-    transform: translateY(-2px) !important;
-    box-shadow: 0 0 35px rgba(0, 242, 254, 0.7) !important;
-}}
-
-/* Pillar Badges */
-.pill-badge {{
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}}
-.badge-lx {{ background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; }}
-.badge-ax {{ background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; }}
-.badge-cx {{ background: rgba(168, 85, 247, 0.18); border: 1px solid rgba(168, 85, 247, 0.4); color: #c084fc; }}
-.badge-px {{ background: rgba(244, 63, 94, 0.18); border: 1px solid rgba(244, 63, 94, 0.4); color: #fb7185; }}
-.badge-sx {{ background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; }}
-
-.card-placed {{
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(13, 22, 38, 0.9) 100%);
-    border-left: 5px solid #10b981;
-    border-top: 1px solid rgba(16, 185, 129, 0.35);
-    border-right: 1px solid rgba(16, 185, 129, 0.2);
-    border-bottom: 1px solid rgba(16, 185, 129, 0.2);
-    border-radius: 0 10px 10px 0;
-    padding: 22px;
-}}
-
-.card-unplaced {{
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(20, 10, 20, 0.9) 100%);
-    border-left: 5px solid #ef4444;
-    border-top: 1px solid rgba(239, 68, 68, 0.35);
-    border-right: 1px solid rgba(239, 68, 68, 0.2);
-    border-bottom: 1px solid rgba(239, 68, 68, 0.2);
-    border-radius: 0 10px 10px 0;
-    padding: 22px;
-}}
-
-.card-warning {{
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(20, 16, 10, 0.9) 100%);
-    border-left: 5px solid #f59e0b;
-    border-top: 1px solid rgba(245, 158, 11, 0.35);
-    border-right: 1px solid rgba(245, 158, 11, 0.2);
-    border-bottom: 1px solid rgba(245, 158, 11, 0.2);
-    border-radius: 0 10px 10px 0;
-    padding: 22px;
-}}
-
-.metric-tier-card {{
-    background: rgba(13, 19, 33, 0.85);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    border-radius: 10px;
-    padding: 22px;
-}}
 </style>
 
 <!-- TOP NAVBAR -->
-<div class="navbar-container">
+<div class="navbar-wrapper">
     <div class="nav-brand">
-        {svg_icon(ICO_CHIP, '#00f2fe', 22)}
-        <span class="nav-title">NEXUS // CAREERPULSE</span>
-        <span class="nav-badge">v2.6 CALIBRATED</span>
+        {svg_icon(ICO_CHIP, '#06b6d4', 22)}
+        <span class="nav-title">NEXUS // CAREERPULSE AI</span>
+        <span class="nav-pill">v2.6 CALIBRATED</span>
     </div>
-    <div style="font-size:0.85rem; color:#94a3b8;">
-        {svg_icon(ICO_GITHUB, '#94a3b8', 16)} <a href="https://github.com/stutikatiyar/placement-prediction" target="_blank" style="color:#94a3b8; text-decoration:none;">stutikatiyar/placement-prediction</a>
-    </div>
+    <a class="github-badge" href="https://github.com/stutikatiyar/placement-prediction" target="_blank" rel="noopener noreferrer">
+        {svg_icon(ICO_GITHUB, '#cbd5e1', 16)}
+        <span>GitHub Repo</span>
+    </a>
 </div>
 """, unsafe_allow_html=True)
 
-# Interactive Tab Buttons for Page Switch
+# Clean Modern Nav Buttons
 tab_col1, tab_col2, tab_col3 = st.columns([1.2, 1.6, 1.2])
 
 with tab_col1:
-    if st.button("⚡ System Overview & Specs", use_container_width=True, type="primary" if st.session_state.current_page == "overview" else "secondary"):
+    if st.button("System Overview", use_container_width=True, type="primary" if st.session_state.current_page == "overview" else "secondary"):
         st.session_state.current_page = "overview"
         st.rerun()
 
 with tab_col2:
-    if st.button("🎯 Launch Diagnostic Evaluator (Analyze)", use_container_width=True, type="primary" if st.session_state.current_page == "analyze" else "secondary"):
+    if st.button("Diagnostic Evaluator", use_container_width=True, type="primary" if st.session_state.current_page == "analyze" else "secondary"):
         st.session_state.current_page = "analyze"
         st.rerun()
 
 with tab_col3:
-    if st.button("📈 ML Benchmark Report", use_container_width=True, type="primary" if st.session_state.current_page == "benchmarks" else "secondary"):
+    if st.button("ML Benchmarks", use_container_width=True, type="primary" if st.session_state.current_page == "benchmarks" else "secondary"):
         st.session_state.current_page = "benchmarks"
         st.rerun()
 
 st.write("")
 
 # ==============================================================================
-# PAGE 1: SYSTEM OVERVIEW (ANIMATED WEBSITE LANDING)
+# PAGE 1: SYSTEM OVERVIEW
 # ==============================================================================
 if st.session_state.current_page == "overview":
     st.markdown(f"""
-    <div class="hero-animated-card">
-        <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(0,242,254,0.1); border:1px solid rgba(0,242,254,0.3); padding:4px 14px; border-radius:20px; font-size:0.75rem; color:#38bdf8; font-weight:700;">
-            {svg_icon(ICO_ROCKET, '#00f2fe', 14)} CORPORATE RECRUITMENT INTELLIGENCE
+    <div class="hero-card">
+        <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(6,182,212,0.12); border:1px solid rgba(6,182,212,0.3); padding:4px 14px; border-radius:20px; font-size:0.75rem; color:#38bdf8; font-weight:700;">
+            {svg_icon(ICO_SHIELD, '#06b6d4', 14)} RECRUITMENT INTELLIGENCE PLATFORM
         </div>
-        <h1 class="hero-glow-title">NEXUS CAREERPULSE AI</h1>
+        <h1 class="hero-title">NEXUS CAREERPULSE AI</h1>
         <p style="color:#94a3b8; max-width:750px; margin:0 auto 20px auto; font-size:0.95rem; line-height:1.6;">
             A multi-modular predictive analytics platform that evaluates candidate placement probabilities across 
             academic metrics, institutional cutoffs, and 5-pillar skill assessment clearance tiers.
@@ -349,33 +426,33 @@ if st.session_state.current_page == "overview":
     </div>
     """, unsafe_allow_html=True)
 
-    # Big Direct Action Button
+    # Primary Action CTA Button
     col_c1, col_c2, col_c3 = st.columns([1, 2, 1])
     with col_c2:
-        if st.button("🚀 ENTER DIAGNOSTIC MATRIX (ANALYZE CANDIDATE)", use_container_width=True):
+        if st.button("Launch Candidate Diagnostic", use_container_width=True):
             st.session_state.current_page = "analyze"
             st.rerun()
 
     st.write("")
     
-    # Platform Statistics
+    # 4-Column Metric Grid
     st.markdown("""
     <div class="stat-grid">
         <div class="stat-card">
-            <div style="color:#00f2fe; font-size:1.8rem; font-weight:800;">12,000+</div>
-            <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase;">Student Profiles Evaluated</div>
+            <div style="color:#00f2fe; font-size:1.9rem; font-weight:800;">12,000+</div>
+            <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600; margin-top:4px;">Candidate Profiles Evaluated</div>
         </div>
         <div class="stat-card">
-            <div style="color:#a855f7; font-size:1.8rem; font-weight:800;">5-Pillars</div>
-            <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase;">Modular Testing Rubrics</div>
+            <div style="color:#a855f7; font-size:1.9rem; font-weight:800;">5-Pillars</div>
+            <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600; margin-top:4px;">Modular Assessment Rubrics</div>
         </div>
         <div class="stat-card">
-            <div style="color:#10b981; font-size:1.8rem; font-weight:800;">60.0%</div>
-            <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase;">Strict Secondary Board Cutoff</div>
+            <div style="color:#10b981; font-size:1.9rem; font-weight:800;">60.0%</div>
+            <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600; margin-top:4px;">Strict Secondary Board Cutoff</div>
         </div>
         <div class="stat-card">
-            <div style="color:#f43f5e; font-size:1.8rem; font-weight:800;">0 Backlog</div>
-            <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase;">Mandatory Corporate Policy</div>
+            <div style="color:#f43f5e; font-size:1.9rem; font-weight:800;">0 Backlog</div>
+            <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600; margin-top:4px;">Mandatory Corporate Policy</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -385,10 +462,10 @@ if st.session_state.current_page == "overview":
     with f1:
         st.markdown(f"""
         <div class="feature-box" style="border-left-color: #00f2fe;">
-            <div style="font-size:1.1rem; font-weight:700; color:#38bdf8; margin-bottom:8px;">
-                {svg_icon(ICO_SEARCH, '#00f2fe', 16)} Automated Lookup by USN
+            <div style="font-size:1.05rem; font-weight:700; color:#38bdf8; margin-bottom:8px;">
+                {svg_icon(ICO_SEARCH, '#00f2fe', 16)} Automated USN Directory Lookup
             </div>
-            <p style="font-size:0.85rem; color:#94a3b8; line-height:1.6;">
+            <p style="font-size:0.85rem; color:#94a3b8; line-height:1.6; margin:0;">
                 Pre-indexed candidate records with automatic form loading. Eliminate manual input with instant lookup by name or institutional USN code.
             </p>
         </div>
@@ -396,10 +473,10 @@ if st.session_state.current_page == "overview":
     with f2:
         st.markdown(f"""
         <div class="feature-box" style="border-left-color: #f59e0b;">
-            <div style="font-size:1.1rem; font-weight:700; color:#fbbf24; margin-bottom:8px;">
+            <div style="font-size:1.05rem; font-weight:700; color:#fbbf24; margin-bottom:8px;">
                 {svg_icon(ICO_ALERT, '#f59e0b', 16)} 60% Board & Backlog Screening
             </div>
-            <p style="font-size:0.85rem; color:#94a3b8; line-height:1.6;">
+            <p style="font-size:0.85rem; color:#94a3b8; line-height:1.6; margin:0;">
                 Enforces corporate criteria: disqualifies candidates with active backlogs (0.0% probability) and flags severe risk for board marks under 60%.
             </p>
         </div>
@@ -407,41 +484,41 @@ if st.session_state.current_page == "overview":
     with f3:
         st.markdown(f"""
         <div class="feature-box" style="border-left-color: #a855f7;">
-            <div style="font-size:1.1rem; font-weight:700; color:#c084fc; margin-bottom:8px;">
+            <div style="font-size:1.05rem; font-weight:700; color:#c084fc; margin-bottom:8px;">
                 {svg_icon(ICO_BRIEFCASE, '#c084fc', 16)} Calibrated Package Bands
             </div>
-            <p style="font-size:0.85rem; color:#94a3b8; line-height:1.6;">
+            <p style="font-size:0.85rem; color:#94a3b8; line-height:1.6; margin:0;">
                 Predicts continuous probability percentages and matches qualified candidates into tiered compensation bands (Mass IT 4-5 LPA up to Tier-1 MNC 14-20 LPA).
             </p>
         </div>
         """, unsafe_allow_html=True)
 
 # ==============================================================================
-# PAGE 2: DIAGNOSTIC EVALUATION MATRIX (ANALYZE)
+# PAGE 2: DIAGNOSTIC EVALUATOR
 # ==============================================================================
 elif st.session_state.current_page == "analyze":
     st.markdown(f"""
     <div class="section-banner-cyan">
         {svg_icon(ICO_SEARCH, '#00f2fe', 18)}
-        <span class="section-title">Candidate Directory & Profile Auto-Population</span>
+        <span style="font-size:1rem; font-weight:700; color:#f1f5f9;">Candidate Directory & Profile Auto-Population</span>
     </div>
     """, unsafe_allow_html=True)
 
     has_meta = ('usn' in df_students.columns and 'student_name' in df_students.columns)
 
     if has_meta:
-        options = ['[+] Custom Candidate Manual Entry'] + [
+        options = ['[+] Manual Profile Entry'] + [
             f"{row.usn} - {row.student_name} ({row.branch} | CGPA: {row.cgpa})"
             for _, row in df_students.head(300).iterrows()
         ]
     else:
-        options = ['[+] Custom Candidate Manual Entry'] + [
+        options = ['[+] Manual Profile Entry'] + [
             f"ID #{row.student_id:04d} ({row.branch} | CGPA: {row.cgpa})"
             for _, row in df_students.head(300).iterrows()
         ]
 
     selected = st.selectbox("Candidate Search:", options, label_visibility="collapsed")
-    is_custom = (selected == '[+] Custom Candidate Manual Entry')
+    is_custom = (selected == '[+] Manual Profile Entry')
 
     if is_custom:
         d_name, d_usn = "", ""
@@ -476,7 +553,7 @@ elif st.session_state.current_page == "analyze":
         st.markdown(f"""
         <div class="section-banner-purple">
             {svg_icon(ICO_ID, '#c084fc', 18)}
-            <span class="section-title">Academic History & Candidate Identity</span>
+            <span style="font-size:1rem; font-weight:700; color:#f1f5f9;">Academic History & Candidate Identity</span>
         </div>
         """, unsafe_allow_html=True)
         
@@ -513,29 +590,29 @@ elif st.session_state.current_page == "analyze":
         st.markdown(f"""
         <div class="section-banner-emerald">
             {svg_icon(ICO_LAYERS, '#10b981', 18)}
-            <span class="section-title">Department Modular Cutoff Clearances (5-Pillar Rubric)</span>
+            <span style="font-size:1rem; font-weight:700; color:#f1f5f9;">Department Modular Cutoff Clearances (5-Pillar Rubric)</span>
         </div>
         """, unsafe_allow_html=True)
         
         m1, m2, m3, m4, m5 = st.columns(5)
         with m1:
-            st.markdown('<span class="pill-badge badge-lx">✦ Language (Lx)</span>', unsafe_allow_html=True)
+            st.markdown('<span class="pill-badge badge-lx">Language (Lx)</span>', unsafe_allow_html=True)
             lx = st.selectbox("Lx Level", [0, 1, 2, 3, 4], index=[0, 1, 2, 3, 4].index(int(d_lx)), key="lx_box")
         with m2:
-            st.markdown('<span class="pill-badge badge-ax">✦ Aptitude (Ax)</span>', unsafe_allow_html=True)
+            st.markdown('<span class="pill-badge badge-ax">Aptitude (Ax)</span>', unsafe_allow_html=True)
             ax = st.selectbox("Ax Level", [0, 1, 2, 3, 4], index=[0, 1, 2, 3, 4].index(int(d_ax)), key="ax_box")
         with m3:
-            st.markdown('<span class="pill-badge badge-cx">✦ Core Test (Cx)</span>', unsafe_allow_html=True)
+            st.markdown('<span class="pill-badge badge-cx">Core Test (Cx)</span>', unsafe_allow_html=True)
             cx = st.selectbox("Cx Level", [0, 2, 3, 4, 5], index=[0, 2, 3, 4, 5].index(int(d_cx)) if int(d_cx) in [0, 2, 3, 4, 5] else 2, key="cx_box")
         with m4:
-            st.markdown('<span class="pill-badge badge-px">✦ Prog (Px)</span>', unsafe_allow_html=True)
+            st.markdown('<span class="pill-badge badge-px">Programming (Px)</span>', unsafe_allow_html=True)
             px = st.selectbox("Px Level", [0.0, 1.0, 2.0, 3.0, 3.5, 4.0, 5.0], index=[0.0, 1.0, 2.0, 3.0, 3.5, 4.0, 5.0].index(float(d_px)), key="px_box")
         with m5:
-            st.markdown('<span class="pill-badge badge-sx">✦ Softskills (Sx)</span>', unsafe_allow_html=True)
+            st.markdown('<span class="pill-badge badge-sx">Soft Skills (Sx)</span>', unsafe_allow_html=True)
             sx = st.selectbox("Sx Level", [0, 1, 2, 3, 4], index=[0, 1, 2, 3, 4].index(int(d_sx)), key="sx_box")
 
         st.write("")
-        submitted = st.form_submit_button(">> EXECUTE PREDICTIVE DIAGNOSTICS")
+        submitted = st.form_submit_button("Run Diagnostic Assessment")
 
     if submitted:
         final_name = s_name.strip() if s_name.strip() else ("Candidate" if is_custom else d_name)
@@ -599,7 +676,7 @@ elif st.session_state.current_page == "analyze":
         st.markdown(f"""
         <div class="section-banner-cyan">
             {svg_icon(ICO_REPORT, '#00f2fe', 18)}
-            <span class="section-title">Diagnostic Placement & Package Output</span>
+            <span style="font-size:1rem; font-weight:700; color:#f1f5f9;">Diagnostic Placement & Package Output</span>
         </div>
         """, unsafe_allow_html=True)
         
@@ -610,19 +687,19 @@ elif st.session_state.current_page == "analyze":
                 st.markdown(f"""
                 <div class="card-unplaced">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h2 style="color: #ef4444; margin: 0; font-weight:800; font-size:1.35rem;">
-                            {svg_icon(ICO_BAN, '#ef4444', 22)} DISQUALIFIED: ACTIVE BACKLOGS
+                        <h2 style="color: #ef4444; margin: 0; font-weight:800; font-size:1.25rem;">
+                            {svg_icon(ICO_BAN, '#ef4444', 20)} Ineligible: Active Backlogs Detected
                         </h2>
                         <span style="background: rgba(239, 68, 68, 0.25); border: 1px solid rgba(248, 113, 113, 0.5); color: #fca5a5; padding: 4px 14px; border-radius: 4px; font-weight:700; font-size:0.85rem;">
-                            0.0% ELIGIBILITY
+                            0.0% Eligibility
                         </span>
                     </div>
                     <p style="color: #fca5a5; margin: 10px 0 12px 0; font-weight:600;">
-                        {final_name} [{final_usn}] // ACTIVE BACKLOG COUNT: {backlogs}
+                        {final_name} [{final_usn}] — {backlogs} Active Backlog(s)
                     </p>
                     <div style="background: rgba(10, 14, 26, 0.85); padding: 14px 18px; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.35);">
-                        <div style="font-size:0.8rem; text-transform:uppercase; color:#fda4af;">Mandatory Corporate Policy Filter</div>
-                        <div style="font-size: 0.9rem; color: #fecdd3; margin-top: 4px; line-height: 1.6;">
+                        <div style="font-size:0.8rem; text-transform:uppercase; color:#fda4af; font-weight:700;">Mandatory Corporate Policy Filter</div>
+                        <div style="font-size: 0.88rem; color: #fecdd3; margin-top: 4px; line-height: 1.6;">
                             Even if assessment tiers are cleared (Level {overall}), campus recruitment portals automatically filter out candidates with active backlogs. Clear backlog to unlock drive registration.
                         </div>
                     </div>
@@ -634,19 +711,19 @@ elif st.session_state.current_page == "analyze":
                 st.markdown(f"""
                 <div class="card-warning">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h2 style="color: #f59e0b; margin: 0; font-weight:800; font-size:1.35rem;">
-                            {svg_icon(ICO_ALERT, '#f59e0b', 22)} SEVERE RISK: BOARD MARKS &lt; 60%
+                        <h2 style="color: #f59e0b; margin: 0; font-weight:800; font-size:1.25rem;">
+                            {svg_icon(ICO_ALERT, '#f59e0b', 20)} Critical Risk: Board Criteria Unmet
                         </h2>
                         <span style="background: rgba(245, 158, 11, 0.25); border: 1px solid rgba(251, 191, 36, 0.5); color: #fde68a; padding: 4px 14px; border-radius: 4px; font-weight:700; font-size:0.85rem;">
-                            {placed_prob:.1f}% CRITICAL RISK
+                            {placed_prob:.1f}% Critical Risk
                         </span>
                     </div>
                     <p style="color: #fde68a; margin: 10px 0 12px 0; font-weight:600;">
-                        {final_name} [{final_usn}] // 10th: {tenth_pct}% | 12th: {twelfth_pct}%
+                        {final_name} [{final_usn}] — 10th: {tenth_pct}% | 12th: {twelfth_pct}%
                     </p>
                     <div style="background: rgba(10, 14, 26, 0.85); padding: 14px 18px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.35);">
-                        <div style="font-size:0.8rem; text-transform:uppercase; color:#fbbf24;">Corporate 60% First Class Barrier</div>
-                        <div style="font-size: 0.9rem; color: #fef3c7; margin-top: 4px; line-height: 1.6;">
+                        <div style="font-size:0.8rem; text-transform:uppercase; color:#fbbf24; font-weight:700;">Corporate 60% First Class Barrier</div>
+                        <div style="font-size: 0.88rem; color: #fef3c7; margin-top: 4px; line-height: 1.6;">
                             Over 90% of campus hiring companies enforce a <b>strict 60% aggregate cutoff in 10th and 12th</b>. Because your score in {failed_board} is below 60%, corporate ATS filters will reject the candidate before the assessment round.
                         </div>
                     </div>
@@ -677,24 +754,24 @@ elif st.session_state.current_page == "analyze":
                 st.markdown(f"""
                 <div class="card-placed">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h2 style="color: #10b981; margin: 0; font-weight:800; font-size:1.35rem;">
-                            {svg_icon(ICO_CHECK, '#10b981', 22)} STATUS: LIKELY PLACED
+                        <h2 style="color: #10b981; margin: 0; font-weight:800; font-size:1.25rem;">
+                            {svg_icon(ICO_CHECK, '#10b981', 20)} Status: High Placement Likelihood
                         </h2>
-                        <span style="background: rgba(168, 85, 247, 0.25); border: 1px solid rgba(192, 132, 252, 0.5); color: #e9d5ff; padding: 4px 14px; border-radius: 4px; font-weight:700; font-size:0.85rem;">
-                            {placed_prob:.1f}% PROBABILITY
+                        <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.5); color: #6ee7b7; padding: 4px 14px; border-radius: 4px; font-weight:700; font-size:0.85rem;">
+                            {placed_prob:.1f}% Probability
                         </span>
                     </div>
                     <p style="color: #e2e8f0; margin: 10px 0 16px 0;">
-                        Candidate <b>{final_name}</b> [{final_usn}] satisfies all test tiers, 0-backlog policy, and 60%+ board cutoffs.
+                        Candidate <b>{final_name}</b> [{final_usn}] satisfies all test tiers, zero-backlog policy, and secondary board cutoffs.
                     </p>
                     <div style="background: rgba(10, 14, 26, 0.8); padding: 14px 18px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.25);">
-                        <div style="font-size:0.8rem; text-transform:uppercase; color:#38bdf8;">
-                            {svg_icon(ICO_BRIEFCASE, '#38bdf8', 15)} Projected Compensation Band
+                        <div style="font-size:0.75rem; text-transform:uppercase; color:#94a3b8; font-weight:700;">
+                            Projected Compensation Band
                         </div>
                         <div style="font-size: 1.6rem; font-weight: 800; color: #f8fafc; margin: 2px 0;">{pkg}</div>
-                        <div style="font-size: 0.85rem; color: #94a3b8;">Target Tier: <b style="color:#e2e8f0;">{tier_title}</b></div>
+                        <div style="font-size: 0.85rem; color: #38bdf8;">Target Tier: <b>{tier_title}</b></div>
                         <div style="margin-top: 8px; font-size: 0.8rem; color: #64748b; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px;">
-                            <i>💡 {cgpa_note}</i>
+                            {cgpa_note}
                         </div>
                     </div>
                 </div>
@@ -703,11 +780,11 @@ elif st.session_state.current_page == "analyze":
                 st.markdown(f"""
                 <div class="card-unplaced">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h2 style="color: #ef4444; margin: 0; font-weight:800; font-size:1.35rem;">
-                            {svg_icon(ICO_BAN, '#ef4444', 22)} STATUS: NOT PLACED
+                        <h2 style="color: #ef4444; margin: 0; font-weight:800; font-size:1.25rem;">
+                            {svg_icon(ICO_BAN, '#ef4444', 20)} Status: Below Level 3 Cutoff
                         </h2>
                         <span style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 4px 14px; border-radius: 4px; font-weight:700; font-size:0.85rem;">
-                            {100 - placed_prob:.1f}% RISK
+                            {100 - placed_prob:.1f}% Risk
                         </span>
                     </div>
                     <p style="color: #e2e8f0; margin: 10px 0 0 0;">
@@ -719,21 +796,21 @@ elif st.session_state.current_page == "analyze":
         with col_metrics:
             st.markdown(f"""
             <div class="metric-tier-card">
-                <div style="font-size:0.8rem; text-transform:uppercase; color:#38bdf8; font-weight:600;">
+                <div style="font-size:0.8rem; text-transform:uppercase; color:#38bdf8; font-weight:700;">
                     {svg_icon(ICO_LAYERS, '#38bdf8', 15)} Assessment Tier Vector
                 </div>
-                <h1 style="color: #f8fafc; margin: 4px 0 12px 0; font-size: 2.3rem;">LEVEL {overall}</h1>
-                <div style="display:flex; flex-direction:column; gap:8px;">
-                    <div style="display:flex; justify-content:space-between;"><span style="color:#34d399;">✦ Language (Lx):</span> <b>L{lx} / 4</b></div>
-                    <div style="display:flex; justify-content:space-between;"><span style="color:#38bdf8;">✦ Aptitude (Ax):</span> <b>L{ax} / 4</b></div>
-                    <div style="display:flex; justify-content:space-between;"><span style="color:#c084fc;">✦ Core Test (Cx):</span> <b>L{cx} / 5</b></div>
-                    <div style="display:flex; justify-content:space-between;"><span style="color:#fb7185;">✦ Programming (Px):</span> <b>L{px} / 5</b></div>
-                    <div style="display:flex; justify-content:space-between;"><span style="color:#fbbf24;">✦ Soft Skills (Sx):</span> <b>L{sx} / 4</b></div>
+                <h1 style="color: #f8fafc; margin: 4px 0 12px 0; font-size: 2.2rem; font-weight:800;">LEVEL {overall}</h1>
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:0.88rem;">
+                    <div style="display:flex; justify-content:space-between;"><span style="color:#94a3b8;">Language (Lx):</span> <b>L{lx} / 4</b></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:#94a3b8;">Aptitude (Ax):</span> <b>L{ax} / 4</b></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:#94a3b8;">Core Test (Cx):</span> <b>L{cx} / 5</b></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:#94a3b8;">Programming (Px):</span> <b>L{px} / 5</b></div>
+                    <div style="display:flex; justify-content:space-between;"><span style="color:#94a3b8;">Soft Skills (Sx):</span> <b>L{sx} / 4</b></div>
                 </div>
                 <div style="margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08); font-size:0.8rem; color:#94a3b8;">
-                    <div>10th Board: <b>{tenth_pct}%</b></div>
-                    <div>12th Board: <b>{twelfth_pct}%</b></div>
-                    <div>College CGPA: <b>{cgpa}</b></div>
+                    <div>10th Board: <b style="color:#ffffff;">{tenth_pct}%</b></div>
+                    <div>12th Board: <b style="color:#ffffff;">{twelfth_pct}%</b></div>
+                    <div>College CGPA: <b style="color:#ffffff;">{cgpa}</b></div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -745,23 +822,38 @@ elif st.session_state.current_page == "benchmarks":
     st.markdown(f"""
     <div class="section-banner-purple">
         {svg_icon(ICO_REPORT, '#c084fc', 18)}
-        <span class="section-title">Machine Learning Architecture & Performance Evaluation</span>
+        <span style="font-size:1rem; font-weight:700; color:#f1f5f9;">Machine Learning Architecture & Performance Evaluation</span>
     </div>
     """, unsafe_allow_html=True)
 
     benchmark_data = pd.DataFrame([
-        {"Model Architecture": "Random Forest (Calibrated)", "Accuracy": "100.0%", "Precision": "100.0%", "Recall": "100.0%", "F1-Score": "1.0000", "Status": "Active Deployment"},
-        {"Model Architecture": "Gradient Boosting (GBM)", "Accuracy": "100.0%", "Precision": "100.0%", "Recall": "100.0%", "F1-Score": "1.0000", "Status": "Evaluated"},
-        {"Model Architecture": "K-Nearest Neighbors (KNN)", "Accuracy": "95.96%", "Precision": "91.04%", "Recall": "97.95%", "F1-Score": "0.9437", "Status": "Evaluated"},
-        {"Model Architecture": "Logistic Regression", "Accuracy": "94.25%", "Precision": "90.52%", "Recall": "93.13%", "F1-Score": "0.9181", "Status": "Baseline"}
+        {"Model Architecture": "Random Forest (Calibrated)", "Accuracy": "99.96%", "Precision": "99.88%", "Recall": "100.0%", "F1-Score": "0.9994", "Status": "Active Deployment"},
+        {"Model Architecture": "Gradient Boosting (GBM)", "Accuracy": "100.0%", "Precision": "100.0%", "Recall": "100.0%", "F1-Score": "1.0000", "Status": "Benchmarked"},
+        {"Model Architecture": "K-Nearest Neighbors (KNN)", "Accuracy": "95.71%", "Precision": "90.17%", "Recall": "98.31%", "F1-Score": "0.9406", "Status": "Evaluated"},
+        {"Model Architecture": "Logistic Regression", "Accuracy": "94.29%", "Precision": "90.53%", "Recall": "93.25%", "F1-Score": "0.9187", "Status": "Baseline"}
     ])
     st.dataframe(benchmark_data, use_container_width=True, hide_index=True)
 
-    st.markdown("""
-    <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 20px; margin-top: 16px;">
-        <h4 style="color:#38bdf8; margin-top:0;">Ensemble Probability Calibration Note</h4>
-        <p style="color:#94a3b8; font-size:0.88rem; line-height:1.6; margin-bottom:0;">
-            A standard classification tree yields binary step probabilities (0.0 or 1.0). The active pipeline utilizes an ensemble of 150 regularized decision estimators with leaf smoothing (<code>min_samples_leaf=15</code>). This ensures continuously calibrated confidence scores mapped directly to college CGPA performance curves and modular tier clearances.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    b1, b2 = st.columns(2)
+    with b1:
+        st.markdown(f"""
+        <div style="background: rgba(13,20,36,0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 22px; height: 100%;">
+            <div style="font-size:1.05rem; font-weight:700; color:#38bdf8; margin-bottom:8px;">
+                {svg_icon(ICO_CHIP, '#38bdf8', 16)} Ensemble Calibration Architecture
+            </div>
+            <p style="color:#94a3b8; font-size:0.88rem; line-height:1.6; margin-bottom:0;">
+                A standard decision tree yields rigid binary step probabilities (0.0 or 1.0). The active production pipeline utilizes an ensemble of 150 regularized decision estimators with leaf smoothing (<code>min_samples_leaf=12</code>). This provides calibrated, continuous confidence scores directly tied to candidate CGPA distributions and test clearances.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    with b2:
+        st.markdown(f"""
+        <div style="background: rgba(13,20,36,0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 22px; height: 100%;">
+            <div style="font-size:1.05rem; font-weight:700; color:#34d399; margin-bottom:8px;">
+                {svg_icon(ICO_CHECK, '#34d399', 16)} Strict Data Leakage Prevention
+            </div>
+            <p style="color:#94a3b8; font-size:0.88rem; line-height:1.6; margin-bottom:0;">
+                All non-predictive student identifiers (<code>student_id</code>, <code>student_name</code>, <code>usn</code>) and target composite scores (<code>Overall_Level_Score</code>) are strictly dropped prior to feature transformation. Standard scaling and one-hot encoding are fit exclusively inside the Scikit-Learn pipeline to avoid train-test contamination.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
