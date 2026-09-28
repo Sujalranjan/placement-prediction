@@ -1,3 +1,4 @@
+import os
 import joblib
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -9,56 +10,45 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-# 1. Load dataset (update filename/path if using student_placement_data.csv)
-try:
-  df = pd.read_csv('data/student_placement_data.csv')
-except FileNotFoundError:
-  df = pd.read_csv('data/student_placement_data_v2.csv')
+# 1. Load dataset
+data_path = None
+for path in ['data/student_placement_data.csv', 'data/student_placement_data_v2.csv', 'student_placement_data.csv']:
+    if os.path.exists(path):
+        data_path = path
+        break
 
-# 2. Exclude identifiers, student names/USNs, target leakage, and raw marks
-cols_to_drop = [
-    'student_id',
-    'student_name',  # Added to prevent StandardScaler string crash
-    'usn',  # Added to prevent StandardScaler string crash
-    'company_type',
-    'package_lpa',
-    'Overall_Level_Score',  # Direct target leakage!
-    # Raw individual test marks
-    'lang_L1',
-    'lang_L2',
-    'lang_L3',
-    'lang_L4',
-    'apt_A1',
-    'apt_A2',
-    'apt_A3',
-    'apt_A4',
-    'soft_S1',
-    'soft_S2',
-    'soft_S3',
-    'soft_S4',
-    'core_C2_Odd',
-    'core_C2_Full',
-    'core_C3_Odd',
-    'core_C3_Full',
-    'core_C4_Odd',
-    'core_C4_Full',
-    'core_C5_Full',
-    'prog_P1_C',
-    'prog_P2_Python',
-    'prog_P3_Python',
-    'prog_P3_Java',
-    'prog_P4_Prog1',
-    'prog_P4_Prog2',
-    'prog_P4_MAD_FSD',
-    'prog_P4_DS',
+if not data_path:
+    raise FileNotFoundError("Could not find student placement dataset.")
+
+df = pd.read_csv(data_path)
+
+# 2. Detect target column dynamically
+target_col = 'placed' if 'placed' in df.columns else 'placement_status'
+y = df[target_col]
+
+# 3. Explicit features matching app.py input schema (prevents dimension mismatch)
+EXPECTED_FEATURES = [
+    'gender', 'age', 'degree', 'branch', 'cgpa', 'backlogs',
+    'internships', 'certifications', 'coding_skills', 'communication_skills',
+    'aptitude_score', 'projects', 'Lx_Level_Reached', 'Ax_Level_Reached',
+    'Cx_Level_Reached', 'Px_Level_Reached', 'Sx_Level_Reached'
 ]
-df = df.drop(columns=cols_to_drop, errors='ignore')
 
-# 3. Separate features and target
-X = df.drop(columns=['placed'])
-y = df['placed']
+# Fallback: if columns match expected list, use them directly; otherwise drop known noise
+available_features = [col for col in EXPECTED_FEATURES if col in df.columns]
+if len(available_features) == len(EXPECTED_FEATURES):
+    X = df[EXPECTED_FEATURES]
+else:
+    cols_to_drop = [
+        target_col, 'student_id', 'student_name', 'usn', 'company_type', 'package_lpa',
+        'Overall_Level_Score', 'tenth_pct', 'twelfth_pct', '10th_percentage', '12th_percentage'
+    ]
+    # Drop raw test marks
+    raw_prefixes = ('lang_', 'apt_', 'soft_', 'core_', 'prog_', 'Unnamed')
+    cols_to_drop += [c for c in df.columns if c.startswith(raw_prefixes)]
+    X = df.drop(columns=cols_to_drop, errors='ignore')
 
-print(f'Features used for training ({len(X.columns)}): {list(X.columns)}')
+print(f"[*] Training dataset features ({len(X.columns)}): {list(X.columns)}")
 
 # 4. Feature preprocessing pipeline
 cat_cols = ['gender', 'degree', 'branch']
@@ -67,7 +57,7 @@ num_cols = [c for c in X.columns if c not in cat_cols]
 preprocessor = ColumnTransformer(
     transformers=[
         ('num', StandardScaler(), num_cols),
-        ('cat', OneHotEncoder(handle_unknown='ignore'), cat_cols),
+        ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), cat_cols),
     ]
 )
 
@@ -76,11 +66,11 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.20, random_state=42, stratify=y
 )
 
-# 6. Candidate algorithms (calibrated to generate smooth probability spreads)
+# 6. Candidate algorithms with calibration
 models = {
     'Logistic Regression': LogisticRegression(max_iter=1000),
     'Random Forest (Calibrated)': RandomForestClassifier(
-        n_estimators=150, min_samples_leaf=15, random_state=42
+        n_estimators=150, min_samples_leaf=12, random_state=42, class_weight='balanced'
     ),
     'Gradient Boosting': GradientBoostingClassifier(
         n_estimators=100, max_depth=3, random_state=42
@@ -93,37 +83,30 @@ results = []
 best_pipeline = None
 
 for name, model in models.items():
-  pipe = Pipeline([('preprocessor', preprocessor), ('classifier', model)])
-  pipe.fit(X_train, y_train)
-  preds = pipe.predict(X_test)
+    pipe = Pipeline([('preprocessor', preprocessor), ('classifier', model)])
+    pipe.fit(X_train, y_train)
+    preds = pipe.predict(X_test)
 
-  acc = accuracy_score(y_test, preds)
-  prec = precision_score(y_test, preds, zero_division=0)
-  rec = recall_score(y_test, preds, zero_division=0)
-  f1 = f1_score(y_test, preds, zero_division=0)
+    acc = accuracy_score(y_test, preds)
+    prec = precision_score(y_test, preds, zero_division=0)
+    rec = recall_score(y_test, preds, zero_division=0)
+    f1 = f1_score(y_test, preds, zero_division=0)
 
-  results.append({
-      'Model': name,
-      'Accuracy': round(acc, 4),
-      'Precision': round(prec, 4),
-      'Recall': round(rec, 4),
-      'F1-Score': round(f1, 4),
-  })
+    results.append({
+        'Model': name,
+        'Accuracy': round(acc, 4),
+        'Precision': round(prec, 4),
+        'Recall': round(rec, 4),
+        'F1-Score': round(f1, 4),
+    })
 
-  # Select calibrated Random Forest for smooth, continuous probability estimates
-  if name == 'Random Forest (Calibrated)':
-    best_pipeline = pipe
+    if name == 'Random Forest (Calibrated)':
+        best_pipeline = pipe
 
-# Display evaluation benchmark
 results_df = pd.DataFrame(results)
 print(results_df.to_string(index=False))
 
-# Save benchmark results to JSON so app.py dynamically displays actual dataset metrics
-results_df.to_json('models/benchmark_results.json', orient='records', indent=2)
-
-# 7. Export the best-performing pipeline
+# 7. Safe export
+os.makedirs('models', exist_ok=True)
 joblib.dump(best_pipeline, 'models/best_pipeline.pkl')
-print(
-    '\nExported calibrated pipeline (Random Forest) to models/best_pipeline.pkl'
-)
-print('Exported benchmark results to models/benchmark_results.json')
+print('\n[✓] Exported calibrated pipeline (Random Forest) to models/best_pipeline.pkl')
